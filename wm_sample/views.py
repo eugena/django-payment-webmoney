@@ -11,7 +11,7 @@ def simple_payment(request):
 
     initial = {
         'LMI_PAYEE_PURSE': Purse.objects.all()[0],
-        'LMI_PAYMENT_NO': Invoice.objects.create(user=request.user).payment_no,
+        'LMI_PAYMENT_NO': Invoice.objects.create(user=request.user if request.user.is_authenticated() else None).payment_no,
         'LMI_PAYMENT_DESC': loader.render_to_string(
             'wm_sample/simple_payment_desc.txt',
             RequestContext(request)).strip()[:255],

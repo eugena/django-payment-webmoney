@@ -23,7 +23,7 @@ class Purse(models.Model):
 
 
 class Invoice(models.Model):
-    user = models.ForeignKey(AUTH_USER_MODEL)
+    user = models.ForeignKey(AUTH_USER_MODEL, null=True, blank=True)
     created_on = models.DateTimeField(unique=True, editable=False)
     payment_no = models.PositiveIntegerField(unique=True, editable=False)
 
@@ -40,9 +40,8 @@ class Invoice(models.Model):
 
     is_payed = property(_is_payed_admin)
 
-    @transaction.commit_manually
-    def save(self, force_insert=False, force_update=False, using=None):
-        sid = transaction.savepoint()
+    @transaction.atomic()
+    def save(self, force_insert=False, force_update=False, using=None, **kwargs):
         if self.pk is None:
             i = 1
             while self.pk is None:
@@ -67,17 +66,15 @@ class Invoice(models.Model):
                                           self.created_on.minute * 60 +
                                           self.created_on.second) * 10000 + (
                                           self.created_on.microsecond // 100)
-                    super(Invoice, self).save(force_insert, force_update)
+                    with transaction.atomic():
+                        super(Invoice, self).save(force_insert, force_update)
 
                 except IntegrityError:
-                    transaction.savepoint_rollback(sid)
+                    pass
 
                 i += 1
         else:
             super(Invoice, self).save(force_insert, force_update)
-
-        transaction.savepoint_commit(sid)
-        transaction.commit()
 
     def __unicode__(self):
         return '%s/%s (for: %s)' % (
