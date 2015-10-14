@@ -4,6 +4,7 @@ from time import sleep
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, models, transaction
 from django.conf import settings
+from django.utils import timezone
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
@@ -57,7 +58,7 @@ class Invoice(models.Model):
                     )
 
                 try:
-                    self.created_on = datetime.utcnow()
+                    self.created_on = timezone.now()
                     self.created_on = self.created_on - timedelta(
                         microseconds=self.created_on.microsecond % 100)
 
