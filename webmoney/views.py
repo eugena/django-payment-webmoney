@@ -1,7 +1,4 @@
-try:
-    from hashlib import md5
-except ImportError:
-    from md5 import md5
+from hashlib import sha256
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import mail_admins
@@ -51,7 +48,7 @@ def result(request):
             form.cleaned_data['LMI_PAYER_WM']
         )
 
-        generated_hash = md5(key).hexdigest().upper()
+        generated_hash = sha256(key).hexdigest().upper()
 
         if generated_hash == form.cleaned_data['LMI_HASH']:
             payment = Payment(
