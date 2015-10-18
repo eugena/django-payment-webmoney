@@ -13,10 +13,12 @@ except ImportError:
 from webmoney.forms import PrerequestForm, PaymentNotificationForm
 from webmoney.models import Invoice, Payment, Purse
 from webmoney.signals import webmoney_payment_accepted
+import logging
 
 
 @csrf_exempt
 def result(request):
+    logger = logging.getLogger('webmoney.result')
     if request.method != 'POST':
         return HttpResponseNotAllowed(permitted_methods=('POST',))
 
@@ -89,4 +91,5 @@ def result(request):
                 'Payment NO is %s.' % form.cleaned_data['LMI_PAYMENT_NO'],
                 fail_silently=True)
             return HttpResponseBadRequest("Incorrect hash")
+    logger.debug("PaymentNotificationForm Errors:\n {errors!r}".format(errors=form.errors))
     return HttpResponseBadRequest("Unknown error!")
