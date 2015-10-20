@@ -93,5 +93,5 @@ def result(request):
                 'Payment NO is %s.' % form.cleaned_data['LMI_PAYMENT_NO'],
                 fail_silently=True)
             return HttpResponseBadRequest("Incorrect hash")
-    logger.debug(u"PaymentNotificationForm Errors:\n {errors}".format(errors=form.errors))
+    logger.debug(u"PaymentNotificationForm Errors:\n {errors}".format(errors=form.errors), extra={'request': request})
     return HttpResponseBadRequest("Unknown error!")
