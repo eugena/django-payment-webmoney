@@ -19,7 +19,7 @@ import logging
 @csrf_exempt
 def result(request):
     logger = logging.getLogger('webmoney.result')
-    logger.debug(repr(request))
+    logger.debug(u'The beginning of the request', extra={'request': request})
 
     if request.method != 'POST':
         return HttpResponseNotAllowed(permitted_methods=('POST',))
